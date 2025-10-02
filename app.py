@@ -3,11 +3,21 @@ from datetime import datetime
 import unicodedata
 import random
 import locale
-
-# Configurar idioma en español
-locale.setlocale(locale.LC_TIME, "es_ES.UTF-8")
+import os
 
 app = Flask(__name__)
+
+# --- Configurar idioma en español ---
+try:
+    # Intentar con español estándar
+    locale.setlocale(locale.LC_TIME, "es_ES.UTF-8")
+except:
+    try:
+        # Intentar con configuración alternativa
+        locale.setlocale(locale.LC_TIME, "es_ES")
+    except:
+        # Si no funciona (Render), dejar la configuración por defecto
+        pass
 
 # Fondos disponibles
 fondos = {
@@ -28,7 +38,7 @@ canciones = {
     "la vida sin ti": "assets/La vida sin ti Rels B.mp3"
 }
 
-# Normalizar texto (para evitar problemas con tildes/mayúsculas)
+# --- Función para normalizar texto ---
 def normalizar(texto):
     texto = texto.lower()
     texto = ''.join(c for c in unicodedata.normalize('NFD', texto)
@@ -219,5 +229,6 @@ def procesar():
 
     return jsonify({"respuesta": respuesta, **acciones})
 
+# --- Solo para pruebas locales ---
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True)   # ✅ Solo muestra http://127.0.0.1:5000

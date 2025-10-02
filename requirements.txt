@@ -1,2 +1,4 @@
+GNU nano 8.0                    requirements.txt
 flask>=2.0
 gunicorn>=20.0.0
+

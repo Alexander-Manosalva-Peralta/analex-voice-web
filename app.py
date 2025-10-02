@@ -2,9 +2,12 @@ from flask import Flask, render_template, request, jsonify, url_for
 from datetime import datetime
 import unicodedata
 import random
-import os
+import pytz  # Importamos pytz para manejar zonas horarias
 
 app = Flask(__name__)
+
+# --- Zona horaria Lima ---
+tz_lima = pytz.timezone("America/Lima")
 
 # --- Traducción manual de días y meses ---
 dias = {
@@ -32,8 +35,9 @@ meses = {
     "December": "diciembre"
 }
 
+# --- Función para obtener fecha en español ---
 def fecha_en_espanol():
-    hoy = datetime.now()
+    hoy = datetime.now(tz_lima)
     dia = dias[hoy.strftime("%A")]
     mes = meses[hoy.strftime("%B")]
     return dia, hoy.strftime("%d"), mes, hoy.strftime("%Y")
@@ -153,7 +157,7 @@ def procesar():
 
     # Preguntar hora
     if "hora" in texto:
-        ahora = datetime.now()
+        ahora = datetime.now(tz_lima)
         hora = ahora.strftime("%H")
         minuto = ahora.strftime("%M")
         respuesta = random.choice(respuestas_hora).format(hora=hora, minuto=minuto)

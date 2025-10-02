@@ -51,14 +51,29 @@ fondos = {
     "playa": "assets/Playa.mp4",
     "costa verde lima": "assets/Costa Verde Lima.mp4",
     "atardecer": "assets/Atardecer.mp4",
+    "lobo": "assets/lobo.mp4",
+    "condor": "assets/condor_andino.jpg",
+    "delfin": "assets/Delfin.mp4",
+    "pizza": "assets/pizza.mp4",
+    "causa": "assets/causa_limeña.jpg",
+    "lomo": "assets/lomo_saltado.png"
 }
 
 # --- Canciones ---
 canciones = {
     "cancion monte everest": "assets/Monte Everest.mp3",
-    "control": "assets/control.mp3",
-    "control de jammal sanchez": "assets/control.mp3",
-    "la vida sin ti": "assets/La vida sin ti Rels B.mp3"
+    "control": "assets/Control.mp3",
+    "control de jammal sanchez": "assets/Control.mp3",
+    "la vida sin ti": "assets/La vida sin ti Rels B.mp3",
+    "apocalypse": "assets/Apocalypse - Cigarettes After Sex.mp3",
+    "apocalipse": "assets/Apocalypse - Cigarettes After Sex.mp3",
+    "te regalo": "assets/Te Regalo - Rels B.mp3",
+    "la chata": "assets/La Chata - Amen.mp3",
+    "mujer amante": "assets/Mujer Amante - Rata Blanca.mp3",
+    "hazme olvidarla": "assets/Hazme Olvidarla - Willie Gonzalez.mp3",
+    "luna": "assets/Luna - Zoe.mp3",
+    "yellow": "assets/Yellow - Coldplay.mp3",
+    "la tormenta de arena": "assets/La Tormenta de Arena - Dorian.mp3"
 }
 
 # --- Función para normalizar texto ---
@@ -151,7 +166,6 @@ def home():
 def procesar():
     data = request.get_json()
     texto = normalizar(data.get("texto", ""))
-
     respuesta = "No entendí lo que pediste."
     acciones = {}
 
@@ -204,15 +218,27 @@ def procesar():
         respuesta = random.choice(respuestas_color)
         return jsonify({"respuesta": respuesta})
 
-    # Comida favorita
-    if "comida favorita" in texto:
-        respuesta = random.choice(respuestas_comida)
-        return jsonify({"respuesta": respuesta})
-
     # Animal favorito
     if "animal favorito" in texto:
         respuesta = random.choice(respuestas_animal)
-        return jsonify({"respuesta": respuesta})
+        if "lobo" in respuesta.lower():
+            acciones["fondo"] = {"tipo": "video", "src": url_for('static', filename=fondos["lobo"])}
+        elif "condor" in respuesta.lower():
+            acciones["fondo"] = {"tipo": "video", "src": url_for('static', filename=fondos["condor"])}
+        elif "delfin" in respuesta.lower():
+            acciones["fondo"] = {"tipo": "video", "src": url_for('static', filename=fondos["delfin"])}
+        return jsonify({"respuesta": respuesta, **acciones})
+
+    # Comida favorita
+    if "comida favorita" in texto:
+        respuesta = random.choice(respuestas_comida)
+        if "pizza" in respuesta.lower():
+            acciones["fondo"] = {"tipo": "video", "src": url_for('static', filename=fondos["pizza"])}
+        elif "causa" in respuesta.lower():
+            acciones["fondo"] = {"tipo": "imagen", "src": url_for('static', filename=fondos["causa"])}
+        elif "lomo" in respuesta.lower():
+            acciones["fondo"] = {"tipo": "imagen", "src": url_for('static', filename=fondos["lomo"])}
+        return jsonify({"respuesta": respuesta, **acciones})
 
     # Pausar música
     if "pausa la musica" in texto or "pausa la cancion" in texto:

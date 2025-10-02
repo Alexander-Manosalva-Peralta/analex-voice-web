@@ -2,24 +2,43 @@ from flask import Flask, render_template, request, jsonify, url_for
 from datetime import datetime
 import unicodedata
 import random
-import locale
 import os
 
 app = Flask(__name__)
 
-# --- Configurar idioma en español ---
-try:
-    # Intentar con español estándar
-    locale.setlocale(locale.LC_TIME, "es_ES.UTF-8")
-except:
-    try:
-        # Intentar con configuración alternativa
-        locale.setlocale(locale.LC_TIME, "es_ES")
-    except:
-        # Si no funciona (Render), dejar la configuración por defecto
-        pass
+# --- Traducción manual de días y meses ---
+dias = {
+    "Monday": "Lunes",
+    "Tuesday": "Martes",
+    "Wednesday": "Miércoles",
+    "Thursday": "Jueves",
+    "Friday": "Viernes",
+    "Saturday": "Sábado",
+    "Sunday": "Domingo"
+}
 
-# Fondos disponibles
+meses = {
+    "January": "enero",
+    "February": "febrero",
+    "March": "marzo",
+    "April": "abril",
+    "May": "mayo",
+    "June": "junio",
+    "July": "julio",
+    "August": "agosto",
+    "September": "septiembre",
+    "October": "octubre",
+    "November": "noviembre",
+    "December": "diciembre"
+}
+
+def fecha_en_espanol():
+    hoy = datetime.now()
+    dia = dias[hoy.strftime("%A")]
+    mes = meses[hoy.strftime("%B")]
+    return dia, hoy.strftime("%d"), mes, hoy.strftime("%Y")
+
+# --- Fondos disponibles ---
 fondos = {
     "paris": "assets/paris.mp4",
     "fogata": "assets/fogata.mp4",
@@ -30,7 +49,7 @@ fondos = {
     "atardecer": "assets/Atardecer.mp4",
 }
 
-# Canciones
+# --- Canciones ---
 canciones = {
     "cancion monte everest": "assets/Monte Everest.mp3",
     "control": "assets/control.mp3",
@@ -119,6 +138,7 @@ respuestas_animal = [
     "Los delfines, porque son inteligentes y sociales."
 ]
 
+# --- Rutas ---
 @app.route("/")
 def home():
     return render_template("index.html")
@@ -141,11 +161,7 @@ def procesar():
 
     # Preguntar día
     if "dia" in texto or "fecha" in texto:
-        ahora = datetime.now()
-        dia = ahora.strftime("%A")
-        num = ahora.strftime("%d")
-        mes = ahora.strftime("%B")
-        anio = ahora.strftime("%Y")
+        dia, num, mes, anio = fecha_en_espanol()
         respuesta = random.choice(respuestas_dia).format(dia=dia, num=num, mes=mes, anio=anio)
         return jsonify({"respuesta": respuesta})
 
@@ -231,4 +247,4 @@ def procesar():
 
 # --- Solo para pruebas locales ---
 if __name__ == "__main__":
-    app.run(debug=True)   # ✅ Solo muestra http://127.0.0.1:5000
+    app.run(debug=True)

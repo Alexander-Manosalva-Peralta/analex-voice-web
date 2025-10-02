@@ -43,8 +43,8 @@ fondos = {
     "paris": "assets/paris.mp4",
     "fogata": "assets/fogata.mp4",
     "monte everest": "assets/Monte Everest.mp4",
-    "fondo monte everest": "assets/Everest.mp4",
-    "playa": "assets/playa.jpg",
+    "fondo de monte everest": "assets/Everest.mp4",
+    "playa": "assets/Playa.mp4",
     "costa verde lima": "assets/Costa Verde Lima.mp4",
     "atardecer": "assets/Atardecer.mp4",
 }

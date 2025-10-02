@@ -5,7 +5,7 @@ import random
 import locale
 
 # Configurar idioma en español
-locale.setlocale(locale.LC_TIME, "es_ES.utf8")
+locale.setlocale(locale.LC_TIME, "es_ES.UTF-8")
 
 app = Flask(__name__)
 

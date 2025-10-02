@@ -1,6 +1,11 @@
 from flask import Flask, render_template, request, jsonify, url_for
 from datetime import datetime
 import unicodedata
+import random
+import locale
+
+# Configurar idioma en español
+locale.setlocale(locale.LC_TIME, "es_ES.utf8")
 
 app = Flask(__name__)
 
@@ -23,29 +28,86 @@ canciones = {
     "la vida sin ti": "assets/La vida sin ti Rels B.mp3"
 }
 
-preguntas_tiempo = {
-    "hora": "hora",
-    "que hora es": "hora",
-    "dime la hora": "hora",
-    "dia": "dia",
-    "que dia es": "dia",
-    "dime el dia": "dia",
-    "hoy que dia es": "dia"
-}
-
+# Normalizar texto (para evitar problemas con tildes/mayúsculas)
 def normalizar(texto):
     texto = texto.lower()
     texto = ''.join(c for c in unicodedata.normalize('NFD', texto)
                     if unicodedata.category(c) != 'Mn')
     return texto
 
-def hora_a_palabras():
-    ahora = datetime.now()
-    return f"Claro, son las {ahora.hour}:{ahora.minute}:{ahora.second}."
+# --- Respuestas dinámicas ---
+respuestas_hora = [
+    "Son exactamente las {hora}:{minuto}.",
+    "En este momento son las {hora}:{minuto}.",
+    "Déjame ver… ahora son las {hora}:{minuto}.",
+    "Claro, la hora actual es {hora}:{minuto}."
+]
 
-def dia_a_palabras():
-    ahora = datetime.now()
-    return f"Hoy es {ahora.strftime('%A, %d de %B de %Y')}."
+respuestas_dia = [
+    "Hoy es {dia}, {num} de {mes} de {anio}.",
+    "Estamos a {dia}, {num} de {mes}.",
+    "Déjame confirmarlo… sí, hoy es {dia}, {num} de {mes} de {anio}."
+]
+
+respuestas_quien_eres = [
+    "Soy Analex, un asistente virtual creado para conversar contigo y transformar la experiencia en pantalla.",
+    "Me llamo Analex, un asistente retro-futurista que responde a tus preguntas y cambia fondos, música y más.",
+    "Soy Analex, un asistente diseñado para interactuar contigo: puedo mostrarte paisajes, reproducir música y decirte la hora o el día.",
+    "Puedes llamarme Analex. Estoy aquí para acompañarte con fondos, canciones y respuestas a lo que necesites."
+]
+
+respuestas_quien_te_creo = [
+    "Fui creado por Yojan Alexander Manosalva Peralta como un proyecto innovador de asistente virtual.",
+    "Mi creador es Yojan Alexander Manosalva Peralta, quien me programó para transformar la pantalla y reproducir música.",
+    "Yo nací gracias al trabajo de Yojan Alexander Manosalva Peralta, quien me desarrolló como asistente retro-futurista.",
+    "Mi creador es Yojan Alexander Manosalva Peralta. Él me dio la capacidad de hablar, cambiar fondos, reproducir canciones y responder preguntas."
+]
+
+respuestas_que_puedes_hacer = [
+    "Puedo mostrar fondos, reproducir música, decirte la hora, el día y mucho más.",
+    "Soy capaz de responder a tus preguntas, cambiar el ambiente y hasta poner música.",
+    "Mi misión es entretenerte e informarte, cambiando fondos y canciones cuando lo pidas.",
+    "Puedo conversar contigo, transformar la pantalla y darte información útil."
+]
+
+respuestas_saludos = [
+    "¡Hola! Qué bueno verte aquí.",
+    "Estoy muy bien, gracias por preguntar. ¿Y tú?",
+    "¡Hey! Siempre listo para conversar contigo.",
+    "¡Hola! Me alegra que estés aquí conmigo."
+]
+
+respuestas_despedida = [
+    "Hasta pronto, fue un gusto hablar contigo.",
+    "¡Nos vemos! Recuerda que siempre estaré aquí para ti.",
+    "Adiós, cuídate mucho.",
+    "Hasta la próxima, estaré esperándote."
+]
+
+respuestas_curiosidades = [
+    "¿Sabías que el Monte Everest mide 8,849 metros de altura?",
+    "Un dato curioso: el corazón humano late unas 100 mil veces al día.",
+    "La Vía Láctea tiene más de 100 mil millones de estrellas.",
+    "Los delfines se llaman entre sí por sus propios nombres con silbidos."
+]
+
+respuestas_color = [
+    "Me gustan los colores oscuros, como el negro retro-futurista.",
+    "El rojo intenso, porque me recuerda a la energía.",
+    "Creo que el azul sería un buen color para mí, tranquilo pero profundo."
+]
+
+respuestas_comida = [
+    "No puedo comer, pero si pudiera probar, elegiría pizza, ¡suena genial!",
+    "Creo que disfrutaría mucho una causa limeña.",
+    "Probablemente me encantaría un buen lomo saltado."
+]
+
+respuestas_animal = [
+    "Me gustan los lobos, son libres y poderosos.",
+    "Creo que sería el cóndor, porque vuela alto como mis ideas.",
+    "Los delfines, porque son inteligentes y sociales."
+]
 
 @app.route("/")
 def home():
@@ -59,32 +121,83 @@ def procesar():
     respuesta = "No entendí lo que pediste."
     acciones = {}
 
-    # Preguntas de hora/día
-    for clave, tipo in preguntas_tiempo.items():
-        if clave in texto:
-            if tipo == "hora":
-                respuesta = hora_a_palabras()
-                return jsonify({"respuesta": respuesta})
-            elif tipo == "dia":
-                respuesta = dia_a_palabras()
-                return jsonify({"respuesta": respuesta})
+    # Preguntar hora
+    if "hora" in texto:
+        ahora = datetime.now()
+        hora = ahora.strftime("%H")
+        minuto = ahora.strftime("%M")
+        respuesta = random.choice(respuestas_hora).format(hora=hora, minuto=minuto)
+        return jsonify({"respuesta": respuesta})
 
-    # Pausar o detener música
+    # Preguntar día
+    if "dia" in texto or "fecha" in texto:
+        ahora = datetime.now()
+        dia = ahora.strftime("%A")
+        num = ahora.strftime("%d")
+        mes = ahora.strftime("%B")
+        anio = ahora.strftime("%Y")
+        respuesta = random.choice(respuestas_dia).format(dia=dia, num=num, mes=mes, anio=anio)
+        return jsonify({"respuesta": respuesta})
+
+    # Quién eres
+    if "quien eres" in texto or "como te llamas" in texto:
+        respuesta = random.choice(respuestas_quien_eres)
+        return jsonify({"respuesta": respuesta})
+
+    # Quién te creó
+    if "quien te creo" in texto or "creador" in texto:
+        respuesta = random.choice(respuestas_quien_te_creo)
+        return jsonify({"respuesta": respuesta})
+
+    # Qué puedes hacer
+    if "que puedes hacer" in texto or "para que sirves" in texto:
+        respuesta = random.choice(respuestas_que_puedes_hacer)
+        return jsonify({"respuesta": respuesta})
+
+    # Saludos
+    if "hola" in texto or "como estas" in texto:
+        respuesta = random.choice(respuestas_saludos)
+        return jsonify({"respuesta": respuesta})
+
+    # Despedidas
+    if "adios" in texto or "chao" in texto or "hasta luego" in texto:
+        respuesta = random.choice(respuestas_despedida)
+        return jsonify({"respuesta": respuesta})
+
+    # Curiosidades
+    if "dato curioso" in texto or "cuentame algo" in texto:
+        respuesta = random.choice(respuestas_curiosidades)
+        return jsonify({"respuesta": respuesta})
+
+    # Color favorito
+    if "color favorito" in texto:
+        respuesta = random.choice(respuestas_color)
+        return jsonify({"respuesta": respuesta})
+
+    # Comida favorita
+    if "comida favorita" in texto:
+        respuesta = random.choice(respuestas_comida)
+        return jsonify({"respuesta": respuesta})
+
+    # Animal favorito
+    if "animal favorito" in texto:
+        respuesta = random.choice(respuestas_animal)
+        return jsonify({"respuesta": respuesta})
+
+    # Pausar música
     if "pausa la musica" in texto or "pausa la cancion" in texto:
         acciones["musica"] = {"accion": "pause"}
         respuesta = "He pausado la música."
         return jsonify({"respuesta": respuesta, **acciones})
+
+    # Detener música
     if "apaga la musica" in texto or "deten la musica" in texto or "quita la cancion" in texto:
         acciones["musica"] = {"accion": "stop"}
         respuesta = "He apagado la música."
         return jsonify({"respuesta": respuesta, **acciones})
 
-    # Determinar si busca fondo o canción
-    es_fondo = "fondo" in texto or "pantalla" in texto or "imagen" in texto or "video" in texto
-    es_cancion = "cancion" in texto or "musica" in texto or "canción" in texto
-
     # Fondos
-    if es_fondo:
+    if "fondo" in texto or "pantalla" in texto or "imagen" in texto or "video" in texto:
         for nombre, ruta in fondos.items():
             if nombre in texto:
                 tipo = "video" if ruta.endswith((".mp4", ".webm")) else "imagen"
@@ -95,7 +208,7 @@ def procesar():
         return jsonify({"respuesta": respuesta})
 
     # Canciones
-    if es_cancion:
+    if "cancion" in texto or "musica" in texto or "canción" in texto:
         for nombre, ruta in canciones.items():
             if nombre in texto:
                 acciones["musica"] = {"accion": "play", "src": url_for('static', filename=ruta)}

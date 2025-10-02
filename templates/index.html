@@ -3,6 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <title>Analex — Asistente Virtual</title>
+  <!-- Favicon (logo en la pestaña del navegador) -->
+  <!--<link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='logo.ico') }}"> -->
+  <!-- Si usas PNG en vez de ICO, descomenta la siguiente línea -->
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='assets/Analex.jpg') }}">
+
+
   <style>
     *{margin:0; padding:0; box-sizing:border-box;}
 
@@ -60,6 +66,7 @@
     }
     #intro h1{ font-size:4rem; margin-bottom:15px; }
     #intro p{ font-size:1.4rem; font-weight:300; color:#aaa; }
+    #intro span{ font-size:1.1rem; margin-top:10px; color:#ffefb0; }
 
     audio{ display:none !important; }
   </style>
@@ -74,6 +81,7 @@
   <div id="intro">
     <h1>Analex</h1>
     <p>Tu asistente retro-futurista</p>
+    <span>De Manosalva Peralta Yojan Alexander</span>
   </div>
 
   <!-- Overlay principal -->
